@@ -89,10 +89,33 @@ func (a *App) RunScript(ctx context.Context, scriptName string, args ...string) 
 	cmd := exec.CommandContext(ctx, "bash", cmdArgs...)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
+	cmd.Env = append(os.Environ(), a.scriptEnv()...)
 
 	a.Log.Debugf("running script: %s", strings.Join(append([]string{"bash"}, cmdArgs...), " "))
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("script failed (%s): %w", scriptName, err)
 	}
 	return nil
+}
+
+func (a *App) scriptEnv() []string {
+	env := []string{
+		"FORTIS_CONFIG=" + a.ConfigPath,
+	}
+	if a.Debug {
+		env = append(env, "FORTIS_DEBUG=1")
+	}
+	if a.Verbose {
+		env = append(env, "FORTIS_VERBOSE=1")
+	}
+	if a.Quiet {
+		env = append(env, "FORTIS_QUIET=1")
+	}
+	switch a.ColorMode {
+	case ui.ColorAlways:
+		env = append(env, "FORTIS_COLOR=1")
+	case ui.ColorNever:
+		env = append(env, "FORTIS_NO_COLOR=1")
+	}
+	return env
 }

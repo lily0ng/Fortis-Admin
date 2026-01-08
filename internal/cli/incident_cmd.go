@@ -1,19 +1,34 @@
 package cli
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"fortis-admin/internal/app"
+	"fortis-admin/internal/incident"
 )
 
 func newIncidentCmd(a *app.App) *cobra.Command {
+	var (
+		chainOfCustody bool
+		encrypt        bool
+		verbose        bool
+		quiet          bool
+	)
+
 	cmd := &cobra.Command{
 		Use:   "incident",
 		Short: "Incident response toolkit",
 	}
 	cmd.GroupID = "incident"
+	cmd.Flags().BoolVar(&chainOfCustody, "chain-of-custody", false, "Maintain chain of custody")
+	cmd.Flags().BoolVar(&encrypt, "encrypt", false, "Encrypt sensitive data")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "Show detailed output")
+	cmd.Flags().BoolVar(&quiet, "quiet", false, "Minimal output")
 
 	cmd.AddCommand(newIncidentCaptureCmd(a))
 	cmd.AddCommand(newIncidentTriageCmd(a))
@@ -23,7 +38,101 @@ func newIncidentCmd(a *app.App) *cobra.Command {
 	cmd.AddCommand(newIncidentTimelineCmd(a))
 	cmd.AddCommand(newIncidentContainCmd(a))
 	cmd.AddCommand(newIncidentEradicateCmd(a))
+	cmd.AddCommand(newIncidentNetworkForensicsCmd(a))
+	cmd.AddCommand(newIncidentIOCCmd(a))
+	cmd.AddCommand(newIncidentLogsCmd(a))
+	setGroupHelp(cmd, "INCIDENT RESPONSE COMMANDS", "fortis incident [command] [flags]", func(w io.Writer) {
+		_ = chainOfCustody
+		_ = encrypt
+		_ = verbose
+		_ = quiet
 
+		io.WriteString(w, "COMMANDS:\n")
+		io.WriteString(w, "  capture [flags]                  Capture forensic evidence\n")
+		io.WriteString(w, "    --case string                  Case identifier (required)\n")
+		io.WriteString(w, "    --type strings                 Evidence types (memory, disk, network, logs, all)\n")
+		io.WriteString(w, "    --output string                Output directory\n")
+		io.WriteString(w, "    --compress                     Compress captured data\n")
+		io.WriteString(w, "    --integrity                    Generate integrity checksums\n\n")
+
+		io.WriteString(w, "  triage [flags]                   Perform system triage\n")
+		io.WriteString(w, "    --quick                        Quick triage (basic system info)\n")
+		io.WriteString(w, "    --full                         Full triage (comprehensive)\n")
+		io.WriteString(w, "    --processes                    Analyze running processes\n")
+		io.WriteString(w, "    --network                      Analyze network connections\n")
+		io.WriteString(w, "    --persistence                  Check for persistence mechanisms\n\n")
+		io.WriteString(w, "    --output string                Output file path\n\n")
+
+		io.WriteString(w, "  analyze [flags]                  Analyze captured data\n")
+		io.WriteString(w, "    --input string                 Input directory or file\n")
+		io.WriteString(w, "    --ioc string                   IOC definition file\n")
+		io.WriteString(w, "    --timeline                     Create timeline of events\n")
+		io.WriteString(w, "    --correlate                    Correlate multiple evidence sources\n")
+		io.WriteString(w, "    --report string                Generate analysis report\n\n")
+
+		io.WriteString(w, "  hunt [flags]                     Hunt for threats and IOCs\n")
+		io.WriteString(w, "    --yara string                  YARA rules file/directory\n")
+		io.WriteString(w, "    --sigma string                 Sigma rules for detection\n")
+		io.WriteString(w, "    --memory                       Scan process memory\n")
+		io.WriteString(w, "    --filesystem                   Scan filesystem\n")
+		io.WriteString(w, "    --registry                     Scan Windows registry (Wine/Cross-platform)\n\n")
+
+		io.WriteString(w, "  report [flags]                   Generate incident report\n")
+		io.WriteString(w, "    --template string              Report template\n")
+		io.WriteString(w, "    --format string                Output format (pdf, html, docx, markdown)\n")
+		io.WriteString(w, "    --executive                    Include executive summary\n")
+		io.WriteString(w, "    --technical                    Include technical details\n")
+		io.WriteString(w, "    --evidence                     Include evidence references\n\n")
+
+		io.WriteString(w, "  timeline [flags]                 Create forensic timeline\n")
+		io.WriteString(w, "    --source string                Data source directory\n")
+		io.WriteString(w, "    --from string                  Start time (YYYY-MM-DD HH:MM)\n")
+		io.WriteString(w, "    --to string                    End time (YYYY-MM-DD HH:MM)\n")
+		io.WriteString(w, "    --visualize                    Generate visual timeline\n")
+		io.WriteString(w, "    --export string                Export format (csv, json, html)\n\n")
+
+		io.WriteString(w, "  contain [flags]                  Execute containment procedures\n")
+		io.WriteString(w, "    --isolate                      Network isolation\n")
+		io.WriteString(w, "    --quarantine string            Quarantine suspicious files\n")
+		io.WriteString(w, "    --accounts strings             Suspend compromised accounts\n")
+		io.WriteString(w, "    --services strings             Stop suspicious services\n")
+		io.WriteString(w, "    --revert                       Revert to last known good state\n\n")
+
+		io.WriteString(w, "  eradicate [flags]                Remove threats from system\n")
+		io.WriteString(w, "    --malware                      Remove detected malware\n")
+		io.WriteString(w, "    --persistence                  Remove persistence mechanisms\n")
+		io.WriteString(w, "    --artifacts                    Clean attack artifacts\n")
+		io.WriteString(w, "    --validate                     Verify removal success\n\n")
+
+		io.WriteString(w, "FLAGS:\n")
+		io.WriteString(w, "  --chain-of-custody           Maintain chain of custody\n")
+		io.WriteString(w, "  --encrypt                    Encrypt sensitive data\n")
+		io.WriteString(w, "  --verbose                    Show detailed output\n")
+		io.WriteString(w, "  --quiet                      Minimal output\n\n")
+
+		io.WriteString(w, "EXAMPLES:\n")
+		io.WriteString(w, "  fortis incident capture --case incident-001 --type all\n")
+		io.WriteString(w, "  fortis incident triage --full --output /evidence/triage.txt\n")
+		io.WriteString(w, "  fortis incident hunt --yara ./rules/malware.yara\n")
+		io.WriteString(w, "  fortis incident report --format pdf --executive --technical\n")
+	})
+
+	return cmd
+}
+
+func newIncidentNetworkForensicsCmd(a *app.App) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:    "net",
+		Short:  "Network forensics helper (safe)",
+		Hidden: true,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			_ = args
+			return a.RunScript(cmd.Context(), "network-forensics.sh")
+		},
+	}
+	cmd.Flags().StringVarP(new(string), "output", "o", "", "")
+	// keep command hidden; placeholder flag kept hidden intentionally
+	_ = cmd.Flags().MarkHidden("output")
 	return cmd
 }
 
@@ -42,17 +151,24 @@ func newIncidentCaptureCmd(a *app.App) *cobra.Command {
 			if caseID == "" {
 				return errors.New("--case is required")
 			}
-			argv := []string{"--case", caseID, "--output", outputDir}
-			for _, t := range types {
-				argv = append(argv, "--type", t)
+			m, err := incident.Capture(cmd.Context(), incident.CaptureOptions{
+				CaseID:      caseID,
+				Types:       types,
+				OutputDir:   outputDir,
+				Compress:    compress,
+				Integrity:   integrity,
+				Encrypt:     getBoolFlag(cmd, "encrypt"),
+				Chain:       getBoolFlag(cmd, "chain-of-custody"),
+				Verbose:     a.Verbose,
+				CollectedBy: os.Getenv("USER"),
+			})
+			if err != nil {
+				return err
 			}
-			if compress {
-				argv = append(argv, "--compress")
-			}
-			if integrity {
-				argv = append(argv, "--integrity")
-			}
-			return a.RunScript(cmd.Context(), "incident-capture.sh", argv...)
+			// Write a manifest summary to stdout for automation.
+			enc := json.NewEncoder(cmd.OutOrStdout())
+			enc.SetIndent("", "  ")
+			return enc.Encode(m)
 		},
 	}
 	cmd.Flags().StringVar(&caseID, "case", "", "Case identifier (required)")
@@ -70,28 +186,25 @@ func newIncidentTriageCmd(a *app.App) *cobra.Command {
 		processes   bool
 		network     bool
 		persistence bool
+		output      string
 	)
 	cmd := &cobra.Command{
 		Use:   "triage",
 		Short: "Perform rapid system triage",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			argv := []string{}
-			if quick {
-				argv = append(argv, "--quick")
+			out, err := incident.Triage(cmd.Context(), incident.TriageOptions{
+				Quick:       quick,
+				Full:        full,
+				Processes:   processes,
+				Network:     network,
+				Persistence: persistence,
+				Output:      output,
+			})
+			if err != nil {
+				return err
 			}
-			if full {
-				argv = append(argv, "--full")
-			}
-			if processes {
-				argv = append(argv, "--processes")
-			}
-			if network {
-				argv = append(argv, "--network")
-			}
-			if persistence {
-				argv = append(argv, "--persistence")
-			}
-			return a.RunScript(cmd.Context(), "triage-system.sh", argv...)
+			_, _ = io.WriteString(cmd.OutOrStdout(), out+"\n")
+			return nil
 		},
 	}
 	cmd.Flags().BoolVar(&quick, "quick", false, "Quick triage (basic system info)")
@@ -99,6 +212,7 @@ func newIncidentTriageCmd(a *app.App) *cobra.Command {
 	cmd.Flags().BoolVar(&processes, "processes", false, "Analyze running processes")
 	cmd.Flags().BoolVar(&network, "network", false, "Analyze network connections")
 	cmd.Flags().BoolVar(&persistence, "persistence", false, "Check for persistence mechanisms")
+	cmd.Flags().StringVar(&output, "output", "", "Output file path")
 	return cmd
 }
 
@@ -114,14 +228,18 @@ func newIncidentAnalyzeCmd(a *app.App) *cobra.Command {
 		Use:   "analyze",
 		Short: "Analyze captured data",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			argv := []string{"--input", input, "--ioc", ioc, "--report", report}
-			if timeline {
-				argv = append(argv, "--timeline")
+			out, err := incident.Analyze(cmd.Context(), incident.AnalyzeOptions{
+				Input:     input,
+				IOCFile:   ioc,
+				Timeline:  timeline,
+				Correlate: correlate,
+				Report:    report,
+			})
+			if err != nil {
+				return err
 			}
-			if correlate {
-				argv = append(argv, "--correlate")
-			}
-			return a.RunScript(cmd.Context(), "incident-analyze.sh", argv...)
+			_, _ = io.WriteString(cmd.OutOrStdout(), out+"\n")
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&input, "input", "", "Input directory or file")
@@ -172,22 +290,25 @@ func newIncidentReportCmd(a *app.App) *cobra.Command {
 		execSum   bool
 		technical bool
 		evidence  bool
+		output    string
 	)
 	cmd := &cobra.Command{
 		Use:   "report",
 		Short: "Generate incident reports",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			argv := []string{"--template", template, "--format", format}
-			if execSum {
-				argv = append(argv, "--executive")
+			out, err := incident.GenerateReport(incident.ReportOptions{
+				Template:  template,
+				Format:    format,
+				Executive: execSum,
+				Technical: technical,
+				Evidence:  evidence,
+				Output:    output,
+			})
+			if err != nil {
+				return err
 			}
-			if technical {
-				argv = append(argv, "--technical")
-			}
-			if evidence {
-				argv = append(argv, "--evidence")
-			}
-			return a.RunScript(cmd.Context(), "incident-report.sh", argv...)
+			_, _ = io.WriteString(cmd.OutOrStdout(), out+"\n")
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&template, "template", "", "Report template")
@@ -195,6 +316,7 @@ func newIncidentReportCmd(a *app.App) *cobra.Command {
 	cmd.Flags().BoolVar(&execSum, "executive", false, "Include executive summary")
 	cmd.Flags().BoolVar(&technical, "technical", false, "Include technical details")
 	cmd.Flags().BoolVar(&evidence, "evidence", false, "Include evidence references")
+	cmd.Flags().StringVar(&output, "output", "", "Output file path")
 	return cmd
 }
 
@@ -210,11 +332,18 @@ func newIncidentTimelineCmd(a *app.App) *cobra.Command {
 		Use:   "timeline",
 		Short: "Create forensic timeline",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			argv := []string{"--source", source, "--from", from, "--to", to, "--export", exportFmt}
-			if visualize {
-				argv = append(argv, "--visualize")
+			out, err := incident.BuildTimeline(cmd.Context(), incident.TimelineOptions{
+				Source:    source,
+				From:      from,
+				To:        to,
+				Visualize: visualize,
+				Export:    exportFmt,
+			})
+			if err != nil {
+				return err
 			}
-			return a.RunScript(cmd.Context(), "forensic-timeline.sh", argv...)
+			_, _ = io.WriteString(cmd.OutOrStdout(), out+"\n")
+			return nil
 		},
 	}
 	cmd.Flags().StringVar(&source, "source", "", "Data source directory")

@@ -1,27 +1,40 @@
 package cli
 
 import (
-	"fmt"
 	"io"
 	"os"
 
 	"github.com/spf13/cobra"
 
 	"fortis-admin/internal/app"
-	"fortis-admin/internal/buildinfo"
 	"fortis-admin/internal/ui"
 )
 
 func NewRootCmd(out, errOut io.Writer) *cobra.Command {
 	a := app.New()
+	var showVersion bool
 
 	root := &cobra.Command{
 		Use:          "fortis",
 		Short:        "Fortis-Admin - System Administration & Security Toolkit",
 		SilenceUsage: true,
+		Run: func(cmd *cobra.Command, args []string) {
+			if showVersion {
+				printVersionLong(cmd.OutOrStdout())
+				return
+			}
+			printRootHelp(cmd.OutOrStdout())
+		},
 		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 			if a.ConfigPath == "" {
 				a.ConfigPath = "/etc/fortis/config.yaml"
+			}
+			if forceColor {
+				a.ColorMode = ui.ColorAlways
+			} else if noColor {
+				a.ColorMode = ui.ColorNever
+			} else {
+				a.ColorMode = ui.ColorAuto
 			}
 			return a.Init()
 		},
@@ -39,16 +52,13 @@ func NewRootCmd(out, errOut io.Writer) *cobra.Command {
 	root.SetErr(errOut)
 
 	root.PersistentFlags().StringVarP(&a.ConfigPath, "config", "c", "/etc/fortis/config.yaml", "Configuration file")
-	root.PersistentFlags().BoolVar(&a.Debug, "debug", false, "Enable debug mode")
+	root.PersistentFlags().BoolVarP(&a.Debug, "debug", "d", false, "Enable debug mode")
 	root.PersistentFlags().BoolVarP(&a.Quiet, "quiet", "q", false, "Quiet mode (minimal output)")
 	root.PersistentFlags().BoolVarP(&a.Verbose, "verbose", "v", false, "Verbose output")
 	root.PersistentFlags().BoolVar(&forceColor, "color", false, "Force color output")
 	root.PersistentFlags().BoolVar(&noColor, "no-color", false, "Disable color output")
-
-	root.SetHelpFunc(func(cmd *cobra.Command, args []string) {
-		ui.Banner(cmd.OutOrStdout(), "FORTIS-ADMIN "+buildinfo.Version)
-		_ = cmd.HelpFunc()(cmd, args)
-	})
+	root.PersistentFlags().BoolVar(&showVersion, "version", false, "Display version information")
+	setRootHelp(root)
 
 	root.AddCommand(newVersionCmd(a))
 	root.AddCommand(newCompletionCmd())
@@ -62,8 +72,6 @@ func NewRootCmd(out, errOut io.Writer) *cobra.Command {
 	root.AddCommand(newBackupCmd(a))
 	root.AddCommand(newClusterCmd(a))
 	root.AddCommand(newPluginCmd(a))
-
-	root.SetVersionTemplate(fmt.Sprintf("Fortis-Admin %s\n", buildinfo.Version))
 
 	return root
 }
