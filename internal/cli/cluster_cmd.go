@@ -80,7 +80,7 @@ func newClusterCmd(a *app.App) *cobra.Command {
 		io.WriteString(w, "    --remove string              Remove server from inventory\n")
 		io.WriteString(w, "    --groups                     Manage server groups\n")
 		io.WriteString(w, "    --tags strings               Tag servers\n")
-		io.WriteString(w, "    --output string              Output format (text, json)\n\n")
+		io.WriteString(w, "    --export string              Export inventory\n\n")
 
 		io.WriteString(w, "  patch [flags]                  Orchestrate patching across cluster\n")
 		io.WriteString(w, "    --packages strings           Packages to update\n")
@@ -323,6 +323,10 @@ func newClusterMonitorCmd(a *app.App) *cobra.Command {
 	cmd.Flags().BoolVar(&alerts, "alerts", false, "Show active alerts")
 	cmd.Flags().StringVar(&export, "export", "", "Export metrics data")
 	cmd.Flags().StringVar(&output, "output", "text", "Output format (text, json)")
+	_ = cmd.Flags().MarkHidden("group")
+	_ = cmd.Flags().MarkHidden("hosts")
+	_ = cmd.Flags().MarkHidden("file")
+	_ = cmd.Flags().MarkHidden("output")
 	return cmd
 }
 
@@ -334,11 +338,15 @@ func newClusterInventoryCmd(a *app.App) *cobra.Command {
 		groups bool
 		tags   []string
 		output string
+		export string
 	)
 	cmd := &cobra.Command{
 		Use:   "inventory",
 		Short: "Manage server inventory",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if export != "" {
+				output = export
+			}
 			// Keep intrusive/mutating operations script-based for now.
 			if scan || add != "" || remove != "" || groups || len(tags) > 0 {
 				argv := []string{"--add", add, "--remove", remove, "--output", output}
@@ -380,6 +388,8 @@ func newClusterInventoryCmd(a *app.App) *cobra.Command {
 	cmd.Flags().BoolVar(&groups, "groups", false, "Manage server groups")
 	cmd.Flags().StringSliceVar(&tags, "tags", nil, "Tag servers")
 	cmd.Flags().StringVar(&output, "output", "text", "Output format (text, json)")
+	cmd.Flags().StringVar(&export, "export", "", "Export inventory")
+	_ = cmd.Flags().MarkHidden("output")
 	return cmd
 }
 
@@ -489,6 +499,11 @@ func newClusterPatchCmd(a *app.App) *cobra.Command {
 	cmd.Flags().BoolVar(&rollbackOnFailure, "rollback-on-failure", false, "Auto-rollback on failure")
 	cmd.Flags().BoolVar(&apply, "apply", false, "Apply patch plan (requires --yes)")
 	cmd.Flags().BoolVar(&yes, "yes", false, "Auto-confirm patch application")
+	_ = cmd.Flags().MarkHidden("group")
+	_ = cmd.Flags().MarkHidden("hosts")
+	_ = cmd.Flags().MarkHidden("file")
+	_ = cmd.Flags().MarkHidden("apply")
+	_ = cmd.Flags().MarkHidden("yes")
 	return cmd
 }
 

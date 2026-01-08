@@ -2,13 +2,22 @@
 
 # FORTIS-ADMIN
 
+<img alt="FORTIS-ADMIN" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=120&section=header&text=FORTIS-ADMIN&fontColor=ffffff&fontSize=46&animation=fadeIn" />
+
 <p><b>Server Hardening</b> · <b>Incident Response</b> · <b>Backups</b> · <b>Cluster Ops</b></p>
 
 <p>
   <img alt="Go" src="https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white" />
   <img alt="CLI" src="https://img.shields.io/badge/CLI-Cobra-0A0A0A?logo=terminal&logoColor=white" />
   <img alt="Safe" src="https://img.shields.io/badge/Safe--By--Default-yes-2ea44f" />
+  <img alt="Linux" src="https://img.shields.io/badge/Linux-Supported-111827?logo=linux&logoColor=white" />
+  <img alt="macOS" src="https://img.shields.io/badge/macOS-Build/Test-111827?logo=apple&logoColor=white" />
+  <img alt="Windows" src="https://img.shields.io/badge/Windows-Limited-111827?logo=windows&logoColor=white" />
   <img alt="License" src="https://img.shields.io/badge/License-Open%20Source-blue" />
+</p>
+
+<p>
+  <img alt="Creator" src="https://img.shields.io/badge/Creator-Lily%20Yang-FF2D95" />
 </p>
 
 <p>
@@ -23,7 +32,7 @@
 
 ---
 
-## About
+## 🧭 About
 
 FORTIS-ADMIN is a modular SysAdmin automation CLI for:
 
@@ -34,6 +43,21 @@ FORTIS-ADMIN is a modular SysAdmin automation CLI for:
 
 It combines a Go-based CLI with safe-by-default Bash helpers.
 
+**Creator:** Lily Yang
+
+<table>
+  <tr>
+    <td><b>🛡️ Hardening</b><br/>CIS-style audits, firewall/kernel tuning, SSH/user policy helpers</td>
+    <td><b>🕵️ Incident</b><br/>Capture, triage, analyze, timeline, reports</td>
+  </tr>
+  <tr>
+    <td><b>💾 Backup</b><br/>Create/verify/restore, catalogs, schedulers (safe)</td>
+    <td><b>🖧 Cluster</b><br/>Inventory, exec, monitoring, patch planning</td>
+  </tr>
+</table>
+
+> **Safety model:** Commands that can change system state require explicit confirmation (e.g., `--yes`, `--apply`).
+
 **Design principles**
 
 - **Safe-by-default**: actions that can change system state require explicit confirmation (e.g., `--yes`, `--apply`)
@@ -42,7 +66,7 @@ It combines a Go-based CLI with safe-by-default Bash helpers.
 
 ---
 
-## Table of Contents
+## 🗂️ Table of Contents
 
 - [Quickstart](#quickstart)
 - [Features](#features)
@@ -56,7 +80,7 @@ It combines a Go-based CLI with safe-by-default Bash helpers.
 
 ---
 
-## Quickstart
+## ⚡ Quickstart
 
 ### Build
 
@@ -79,10 +103,10 @@ go build -o fortis ./cmd/fortis
 
 ---
 
-## Features
+## ✨ Features
 
 <details open>
-<summary><b>Server Hardening Automation</b></summary>
+<summary><b>🛡️ Server Hardening Automation</b></summary>
 
 - `fortis harden audit` (Go): security audit, scoring, JSON/YAML/HTML output
 - `fortis harden apply` (Go): profile application with dry-run + rollback
@@ -97,7 +121,7 @@ go build -o fortis ./cmd/fortis
 </details>
 
 <details>
-<summary><b>Incident Response Toolkit</b></summary>
+<summary><b>🕵️ Incident Response Toolkit</b></summary>
 
 - `fortis incident capture` (Go): evidence capture + integrity manifest + compression
 - `fortis incident triage` (Go): quick/full triage with `--output`
@@ -110,20 +134,23 @@ go build -o fortis ./cmd/fortis
 </details>
 
 <details>
-<summary><b>Backup & Recovery</b></summary>
+<summary><b>💾 Backup & Recovery</b></summary>
 
 - `fortis backup create` (Go): tar/tar.gz backups + `.meta.json` sidecar + SHA256
 - `fortis backup list` (Go): lists backups from sidecar metadata
 - `fortis backup verify` (Go): checksum validation + optional restore simulation (`--full`)
 - `fortis backup restore` (Go): restore archives
 - `fortis backup catalog` (Go): list/search archive contents
+
+Advanced (hidden from `--help` to keep the CLI surface minimal):
+
 - `fortis backup snapshot` (Go): snapshot manager planner (backend detection; apply stub)
 - `fortis backup restore-wizard` (Go): interactive restore wizard (dry-run by default)
 
 </details>
 
 <details>
-<summary><b>Multi-Server (Cluster) Management</b></summary>
+<summary><b>🖧 Multi-Server (Cluster) Management</b></summary>
 
 - `fortis cluster init` (Go): creates an inventory template + SSH guidance (safe)
 - `fortis cluster inventory` (Go): read inventory YAML and output text/json
@@ -135,7 +162,7 @@ go build -o fortis ./cmd/fortis
 
 ---
 
-## System Design
+## 🧩 System Design
 
 ### High-level architecture
 
@@ -147,6 +174,17 @@ flowchart LR
   GO --> FS[(Local filesystem)]
   SH --> FS
   CLI -->|SSH fan-out| R[(Remote nodes)]
+```
+
+### Safety model (why `--yes` exists)
+
+```mermaid
+flowchart TD
+  A[Command invoked] --> B{Potentially destructive?}
+  B -- no --> C[Run normally]
+  B -- yes --> D{Explicit confirmation provided?}
+  D -- no --> E[Plan / dry-run output]
+  D -- yes --> F[Apply changes]
 ```
 
 ### Data flow: backups
@@ -177,9 +215,57 @@ flowchart TD
   E --> F
 ```
 
+### Data flow: cluster execution
+
+```mermaid
+sequenceDiagram
+  participant U as Operator
+  participant C as fortis cluster (Go)
+  participant I as Inventory (YAML)
+  participant H as Hosts
+  U->>C: cluster exec --group webservers --command "..."
+  C->>I: load + filter hosts
+  C->>H: SSH fan-out
+  H-->>C: stdout/stderr + status
+  C-->>U: combined/separate/json output
+```
+
 ---
 
-## Commands & Examples
+## 📘 Command Usage Guide
+
+### Safe-by-default flags
+
+- `--yes`:
+  - Used to confirm actions that may change system state.
+  - Common in hardening and cluster operations.
+- `--apply`:
+  - Used when a command supports generating a plan first and applying later.
+  - Common in patching/snapshots.
+
+### Output formats
+
+- Prefer `--output json` (or similar flags) for automation.
+- Use `--verbose` for interactive debugging.
+- Use `--quiet` for CI/log-friendly output.
+
+### Inventory-driven operations
+
+Cluster commands typically take inventory/SSH flags:
+
+- `--inventory-file` (defaults to `/etc/fortis/inventory.yaml`)
+- `--ssh-user`, `--ssh-port`, `--ssh-key`
+
+### Scripts vs Go
+
+Some commands call scripts in `./scripts` for OS-level configuration changes.
+
+- Keep scripts audited and version-controlled.
+- Run on a test host first.
+
+---
+
+## ⌨️ Commands & Examples
 
 ### Hardening: audit + apply (safe gate)
 
@@ -241,7 +327,7 @@ Sample output (illustrative):
 
 ---
 
-## OS Support
+## 🧪 OS Support
 
 - Linux (primary target)
 - macOS: build/test support; many hardening/forensic actions are Linux-oriented
@@ -249,7 +335,7 @@ Sample output (illustrative):
 
 ---
 
-## Git Status (Real Time)
+## 🧷 Git Status (Real Time)
 
 ```bash
 git status -sb
@@ -265,15 +351,17 @@ watch -n 1 git status -sb
 
 ---
 
-## Community & Support
+## 🤝 Community & Support
 
 - **Documentation:** https://fortis-admin.readthedocs.io
+- **Source:** https://github.com/lily0ng/Fortis-Admin
+- **Issues:** https://github.com/lily0ng/Fortis-Admin/issues
 - **Discussions:** GitHub Discussions (recommended)
 - **Issue reports:** include OS/version + `fortis --version` + command output
 
 ---
 
-## License
+## 🧾 License
 
 Open source.
 
@@ -282,7 +370,7 @@ Open source.
 
 ---
 
-## Plugins
+## 🧩 Plugins
 
 Drop executables into `./plugins` and run:
 

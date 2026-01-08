@@ -40,4 +40,5 @@ func printVersionLong(w io.Writer) {
 
 	fmt.Fprintln(w, "License: Apache 2.0")
 	fmt.Fprintln(w, "Documentation: https://fortis-admin.readthedocs.io")
+	fmt.Fprintln(w, "Report issues: https://github.com/lily0ng/Fortis-Admin/issues")
 }

@@ -17,8 +17,9 @@ func newBackupRestoreWizardCmd(a *app.App) *cobra.Command {
 	var interactive bool
 
 	cmd := &cobra.Command{
-		Use:   "restore-wizard",
-		Short: "Interactive restore wizard (safe-by-default)",
+		Use:    "restore-wizard",
+		Short:  "Interactive restore wizard (safe-by-default)",
+		Hidden: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_ = args
 			res, err := backup.RunRestoreWizard(cmd.Context(), backup.RestoreWizardOptions{

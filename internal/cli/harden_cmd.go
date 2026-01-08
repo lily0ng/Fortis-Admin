@@ -103,28 +103,6 @@ func newHardenCmd(a *app.App) *cobra.Command {
 		io.WriteString(w, "    --confirm                      Skip confirmation prompts\n")
 		io.WriteString(w, "    --log-only                     Log issues without fixing\n\n")
 
-		io.WriteString(w, "  filesystem [flags]               Filesystem permission and mount audit\n")
-		io.WriteString(w, "    --root string                  Root path to scan (default \"/\")\n")
-		io.WriteString(w, "    --output string                Output file (json|yaml inferred by extension)\n\n")
-
-		io.WriteString(w, "  package-audit [flags]            Installed package inventory and audit\n")
-		io.WriteString(w, "    --list                         Include package list (can be large)\n")
-		io.WriteString(w, "    --output string                Output file (json|yaml inferred by extension)\n\n")
-
-		io.WriteString(w, "  auditd [flags]                   Deploy auditd rules (safe by default)\n")
-		io.WriteString(w, "    --apply                        Apply changes\n")
-		io.WriteString(w, "    --yes                          Confirm changes\n\n")
-
-		io.WriteString(w, "  logging [flags]                  Configure centralized logging (safe by default)\n")
-		io.WriteString(w, "    --remote string                Remote syslog host:port\n")
-		io.WriteString(w, "    --apply                        Apply changes\n")
-		io.WriteString(w, "    --yes                          Confirm changes\n\n")
-
-		io.WriteString(w, "  services [flags]                 List/disable unnecessary services (safe by default)\n")
-		io.WriteString(w, "    --list                         List enabled services\n")
-		io.WriteString(w, "    --disable string               Disable a specific service\n")
-		io.WriteString(w, "    --yes                          Confirm changes\n\n")
-
 		io.WriteString(w, "FLAGS:\n")
 		io.WriteString(w, "  --backup                Create backup before making changes\n")
 		io.WriteString(w, "  --yes                   Auto-confirm all prompts\n")

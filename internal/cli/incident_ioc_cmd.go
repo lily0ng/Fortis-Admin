@@ -19,8 +19,9 @@ func newIncidentIOCCmd(a *app.App) *cobra.Command {
 	var format string
 
 	cmd := &cobra.Command{
-		Use:   "ioc",
-		Short: "Indicator of Compromise management",
+		Use:    "ioc",
+		Short:  "Indicator of Compromise management",
+		Hidden: true,
 	}
 	cmd.Flags().StringVar(&storePath, "store", incident.DefaultIOCStorePath(), "IOC store path")
 	cmd.Flags().StringVar(&format, "format", "json", "Output format (json, text)")

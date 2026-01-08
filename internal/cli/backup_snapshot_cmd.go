@@ -18,8 +18,9 @@ func newBackupSnapshotCmd(a *app.App) *cobra.Command {
 	var yes bool
 
 	cmd := &cobra.Command{
-		Use:   "snapshot",
-		Short: "Snapshot manager (plan-only by default)",
+		Use:    "snapshot",
+		Short:  "Snapshot manager (plan-only by default)",
+		Hidden: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			_ = args
 			res, err := backup.ManageSnapshots(cmd.Context(), backup.SnapshotOptions{

@@ -11,8 +11,9 @@ import (
 
 func newIncidentLogsCmd(a *app.App) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "logs",
-		Short: "Log analyzer",
+		Use:    "logs",
+		Short:  "Log analyzer",
+		Hidden: true,
 	}
 	cmd.AddCommand(newIncidentLogsAnalyzeCmd(a))
 	return cmd

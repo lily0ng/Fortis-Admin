@@ -121,7 +121,7 @@ func printRootHelp(w io.Writer) {
 	fmt.Fprintln(w, "  fortis [command] --help")
 	fmt.Fprintln(w)
 	fmt.Fprintln(w, "Documentation: https://fortis-admin.readthedocs.io")
-	fmt.Fprintln(w, "Report issues: https://github.com/yourname/fortis-admin/issues")
+	fmt.Fprintln(w, "Report issues: https://github.com/lily0ng/Fortis-Admin/issues")
 }
 
 func printRootBanner(w io.Writer) {
