@@ -1,0 +1,3 @@
+log_file: /var/log/fortis/fortis.log
+scripts_dir: ""
+inventory_file: /etc/fortis/inventory.yaml
