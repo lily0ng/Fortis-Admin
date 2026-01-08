@@ -17,6 +17,12 @@
 </p>
 
 <p>
+  <img alt="Linux" src="https://img.icons8.com/color/48/linux.png" height="28" />
+  <img alt="macOS" src="https://img.icons8.com/color/48/mac-os.png" height="28" />
+  <img alt="Windows" src="https://img.icons8.com/color/48/windows-10.png" height="28" />
+</p>
+
+<p>
   <img alt="Creator" src="https://img.shields.io/badge/Creator-Lily%20Yang-FF2D95" />
 </p>
 
@@ -30,9 +36,12 @@
 
 </div>
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧭 About
+
+<img alt="ABOUT" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=ABOUT&fontColor=00E5FF&fontSize=26" width="100%" />
 
 FORTIS-ADMIN is a modular SysAdmin automation CLI for:
 
@@ -64,9 +73,12 @@ It combines a Go-based CLI with safe-by-default Bash helpers.
 - **Portable**: minimal dependencies, works well over SSH
 - **Extensible**: add scripts and/or Go modules without rewriting the CLI
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🗂️ Table of Contents
+
+<img alt="TABLE OF CONTENTS" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=TABLE%20OF%20CONTENTS&fontColor=00E5FF&fontSize=26" width="100%" />
 
 - [Quickstart](#quickstart)
 - [Features](#features)
@@ -78,9 +90,12 @@ It combines a Go-based CLI with safe-by-default Bash helpers.
 - [License](#license)
 - [Plugins](#plugins)
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## ⚡ Quickstart
+
+<img alt="QUICKSTART" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=QUICKSTART&fontColor=00E5FF&fontSize=26" width="100%" />
 
 ### Build
 
@@ -101,9 +116,12 @@ go build -o fortis ./cmd/fortis
 - **Default config path:** `/etc/fortis/config.yaml`
 - **Template:** `configs/config.yaml`
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## ✨ Features
+
+<img alt="FEATURES" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=FEATURES&fontColor=00E5FF&fontSize=26" width="100%" />
 
 <details open>
 <summary><b>🛡️ Server Hardening Automation</b></summary>
@@ -160,9 +178,12 @@ Advanced (hidden from `--help` to keep the CLI surface minimal):
 
 </details>
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧩 System Design
+
+<img alt="SYSTEM DESIGN" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=SYSTEM%20DESIGN&fontColor=00E5FF&fontSize=26" width="100%" />
 
 ### High-level architecture
 
@@ -230,9 +251,12 @@ sequenceDiagram
   C-->>U: combined/separate/json output
 ```
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 📘 Command Usage Guide
+
+<img alt="COMMAND USAGE" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=COMMAND%20USAGE&fontColor=00E5FF&fontSize=26" width="100%" />
 
 ### Safe-by-default flags
 
@@ -263,9 +287,12 @@ Some commands call scripts in `./scripts` for OS-level configuration changes.
 - Keep scripts audited and version-controlled.
 - Run on a test host first.
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## ⌨️ Commands & Examples
+
+<img alt="COMMANDS & EXAMPLES" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=COMMANDS%20%26%20EXAMPLES&fontColor=00E5FF&fontSize=26" width="100%" />
 
 ### Hardening: audit + apply (safe gate)
 
@@ -325,17 +352,23 @@ Sample output (illustrative):
 ./fortis cluster exec --inventory-file ./configs/inventory.yaml --group webservers --command "uname -a" --output json
 ```
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧪 OS Support
+
+<img alt="OS SUPPORT" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=OS%20SUPPORT&fontColor=00E5FF&fontSize=26" width="100%" />
 
 - Linux (primary target)
 - macOS: build/test support; many hardening/forensic actions are Linux-oriented
 - Windows: not currently supported for most workflows
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧷 Git Status (Real Time)
+
+<img alt="GIT STATUS" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=GIT%20STATUS&fontColor=00E5FF&fontSize=26" width="100%" />
 
 ```bash
 git status -sb
@@ -349,9 +382,12 @@ Live refresh (macOS/Linux):
 watch -n 1 git status -sb
 ```
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🤝 Community & Support
+
+<img alt="COMMUNITY" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=COMMUNITY&fontColor=00E5FF&fontSize=26" width="100%" />
 
 - **Documentation:** https://fortis-admin.readthedocs.io
 - **Source:** https://github.com/lily0ng/Fortis-Admin
@@ -359,18 +395,24 @@ watch -n 1 git status -sb
 - **Discussions:** GitHub Discussions (recommended)
 - **Issue reports:** include OS/version + `fortis --version` + command output
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧾 License
+
+<img alt="LICENSE" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=LICENSE&fontColor=00E5FF&fontSize=26" width="100%" />
 
 Open source.
 
 - If your repository includes a `LICENSE` file, that is the authoritative license.
 - If not, add one (MIT/Apache-2.0/GPL-3.0 are common choices).
 
----
+
+<img alt="divider" src="https://capsule-render.vercel.app/api?type=rect&color=0:00E5FF,100:8A2BE2&height=3&section=header&text=" width="100%" />
 
 ## 🧩 Plugins
+
+<img alt="PLUGINS" src="https://capsule-render.vercel.app/api?type=rect&color=0:0B1220,100:8A2BE2&height=56&section=header&text=PLUGINS&fontColor=00E5FF&fontSize=26" width="100%" />
 
 Drop executables into `./plugins` and run:
 
@@ -378,3 +420,9 @@ Drop executables into `./plugins` and run:
 ./fortis plugin list
 ./fortis plugin run <plugin> [args...]
 ```
+
+<br/>
+
+<div align="center">
+  <img alt="footer" src="https://capsule-render.vercel.app/api?type=rect&color=0:8A2BE2,100:00E5FF&height=90&section=footer&text=Created%20by%20Lily%20Yang&fontColor=ffffff&fontSize=22&animation=fadeIn" width="100%" />
+</div>
